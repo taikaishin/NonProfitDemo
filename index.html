@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>希望編織者 (Wish Weavers)</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Import map for React dependencies -->
+    <script type="importmap">
+    {
+      "imports": {
+        "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
+        "react/": "https://aistudiocdn.com/react@^19.1.1/",
+        "react": "https://aistudiocdn.com/react@^19.1.1"
+      }
+    }
+    </script>
+    
+    <style>
+      /* Smooth scrolling behavior */
+      html {
+        scroll-behavior: smooth;
+      }
+
+      /* Custom animation for modal */
+      @keyframes fadeInScale {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+      }
+      .animate-fade-in-scale {
+        animation: fadeInScale 0.3s ease-out forwards;
+      }
+
+      /* Custom animations for hero text */
+      @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .animate-fade-in-down {
+        animation: fadeInDown 0.8s ease-out forwards;
+      }
+      
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .animate-fade-in-up {
+        animation: fadeInUp 0.8s ease-out 0.4s forwards;
+        opacity: 0; /* Start hidden */
+      }
+    </style>
+</head>
+<body>
+    <!-- The root element for the React app -->
+    <div id="root"></div>
+    
+    <!-- Main application script -->
+    <script type="module" src="/index.tsx"></script>
+    
+    <!-- Script to handle anchor link navigation issue -->
+    <script>
+      // Using event delegation for efficiency
+      document.addEventListener('click', function(e) {
+        // Find the closest ancestor anchor tag that links to an ID
+        const anchor = e.target.closest('a[href^="#"]');
+
+        if (anchor) {
+          const href = anchor.getAttribute('href');
+          // Ignore placeholder links
+          if (href === '#') return;
+          
+          const targetId = href;
+          const targetElement = document.querySelector(targetId);
+
+          // If the target element exists on the page, prevent default navigation
+          // and smoothly scroll to it.
+          if (targetElement) {
+            e.preventDefault();
+            targetElement.scrollIntoView({
+                behavior: 'smooth'
+            });
+          }
+        }
+      });
+    </script>
+</body>
+</html>
