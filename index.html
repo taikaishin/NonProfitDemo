@@ -8,16 +8,12 @@
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Import map for React dependencies -->
-    <script type="importmap">
-    {
-      "imports": {
-        "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
-        "react/": "https://aistudiocdn.com/react@^19.1.1/",
-        "react": "https://aistudiocdn.com/react@^19.1.1"
-      }
-    }
-    </script>
+    <!-- React and ReactDOM (UMD versions) -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+    <!-- Babel for JSX Transpilation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
     <style>
       /* Smooth scrolling behavior */
@@ -58,25 +54,759 @@
     <div id="root"></div>
     
     <!-- Main application script -->
-    <script type="module" src="/index.tsx"></script>
+    <script type="text/babel">
+      const { useState, useEffect } = React;
+
+      // --- From components/WaysToHelpIcons.tsx ---
+      const DonateIcon = (props) => (
+        <svg {...props} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
+      );
+      const VolunteerIcon = (props) => (
+        <svg {...props} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 016-6h6a6 6 0 016 6v1h-3M16 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+      );
+      const PartnerIcon = (props) => (
+        <svg {...props} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+      );
+      
+      // --- From components/Header.tsx ---
+      const Header = ({ onDonateClick }) => {
+        const [isMenuOpen, setIsMenuOpen] = useState(false);
+        const Logo = () => (
+          <div className="flex items-center space-x-2">
+            <svg width="40" height="40" viewBox="0 0 24 24" className="text-white" fill="currentColor">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3.41 14.59L12 13.17l-3.41 3.42-1.41-1.42L10.59 11.75l-3.42-3.41 1.42-1.42L12 10.34l3.41-3.41 1.42 1.42L13.41 11.75l3.42 3.41-1.42 1.43z" transform="scale(1.2) rotate(45 12 12)" />
+            </svg>
+            <span className="text-xl font-extrabold text-white">希望編織者</span>
+          </div>
+        );
+        const NavLink = ({ href, children }) => (
+          <a href={href} className="text-white/80 hover:text-white transition-colors duration-300 font-semibold px-3 py-2">
+            {children}
+          </a>
+        );
+        const navLinks = [
+          { href: '#about', label: '關於我們' },
+          { href: '#stories', label: '願望故事' },
+          { href: '#help', label: '如何幫助' },
+          { href: '#news', label: '最新消息' },
+          { href: '#contact', label: '聯絡我們' },
+        ];
+        return (
+          <header className="bg-[#3d6098]/95 backdrop-blur-md shadow-lg sticky top-0 z-50">
+            <div className="container mx-auto px-6 py-3 flex justify-between items-center">
+              <Logo />
+              <nav className="hidden lg:flex items-center space-x-2">
+                {navLinks.map(link => <NavLink key={link.href} href={link.href}>{link.label}</NavLink>)}
+              </nav>
+              <div className="hidden lg:flex items-center space-x-4">
+                <button onClick={onDonateClick} className="bg-[#f04b4c] text-white font-bold py-2 px-6 rounded-full hover:bg-[#d94445] transition-all duration-300 transform hover:scale-105">
+                  立即捐款
+                </button>
+              </div>
+              <div className="lg:hidden">
+                <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-white focus:outline-none">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={isMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"}></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            {isMenuOpen && (
+              <div className="lg:hidden bg-[#3d6098] py-4 px-6">
+                <nav className="flex flex-col space-y-4">
+                  {navLinks.map(link => <NavLink key={link.href} href={link.href}>{link.label}</NavLink>)}
+                  <button onClick={() => { onDonateClick(); setIsMenuOpen(false); }} className="bg-[#f04b4c] text-white text-center font-bold py-3 px-6 rounded-full hover:bg-[#d94445] transition-all duration-300">
+                    立即捐款
+                  </button>
+                </nav>
+              </div>
+            )}
+          </header>
+        );
+      };
+
+      // --- From components/Hero.tsx ---
+      const Hero = () => {
+        const videoTitle = '點亮夢想，編織希望';
+        const videoSubtitle = '我們相信每個人都應該有機會實現自己的夢想，無論大小，我們致力於將這些夢想變為現實。';
+        const youtubeVideoId = 'oAuM1Oqq8Vw';
+        return (
+          <section className="relative w-full h-[60vh] md:h-[80vh] overflow-hidden">
+            <div className="absolute z-0 w-full h-full pointer-events-none overflow-hidden">
+              <iframe
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+                style={{
+                  width: '100vw',
+                  height: '56.25vw', // 16:9 aspect ratio
+                  minHeight: '100vh',
+                  minWidth: '177.77vh', // 16:9 aspect ratio
+                }}
+                src={`https://www.youtube.com/embed/${youtubeVideoId}?autoplay=1&mute=1&loop=1&playlist=${youtubeVideoId}&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1`}
+                frameBorder="0"
+                allow="autoplay; encrypted-media"
+                title="Embedded YouTube video"
+              />
+            </div>
+            <div className="absolute inset-0 bg-black bg-opacity-40"></div>
+            <div className="relative z-10 h-full flex flex-col justify-center items-center text-center text-white p-4">
+              <div className="max-w-3xl">
+                <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-4 drop-shadow-lg animate-fade-in-down">
+                  {videoTitle}
+                </h1>
+                <p className="text-lg md:text-xl mb-8 drop-shadow-md animate-fade-in-up">
+                  {videoSubtitle}
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
+                  <a href="#about" className="bg-white text-[#213159] font-bold py-3 px-8 rounded-full hover:bg-gray-200 transition-all duration-300 transform hover:scale-105">
+                      了解更多
+                  </a>
+                  <a href="#help" className="bg-[#f04b4c] text-white font-bold py-3 px-8 rounded-full hover:bg-opacity-90 transition-all duration-300 transform hover:scale-105">
+                      立即開始
+                  </a>
+                </div>
+              </div>
+            </div>
+          </section>
+        );
+      };
+
+      // --- From components/Introduction.tsx ---
+      const Introduction = () => {
+        return (
+          <section id="about" className="py-20 bg-white">
+            <div className="container mx-auto px-6">
+              <div className="flex flex-col lg:flex-row items-center gap-12">
+                <div className="lg:w-1/2">
+                  <img 
+                    src="https://github.com/zyrahuang/NPODemo/blob/main/Intoduction.png?raw=true" 
+                    alt="微笑的人" 
+                    className="rounded-lg shadow-2xl object-cover w-full h-full"
+                  />
+                </div>
+                <div className="lg:w-1/2 text-center lg:text-left">
+                  <h2 className="text-sm font-bold uppercase text-[#3d6098] tracking-widest mb-2">我們的使命</h2>
+                  <h3 className="text-3xl md:text-4xl font-extrabold text-gray-800 mb-6">
+                    為各行各業的人們實現改變生命的夢想。
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed mb-4">
+                    在希望編織者，我們相信夢想的力量可以改變人生軌跡。這個信念是我們一切工作的核心。它激勵我們去實現那些能為個人、家庭和社區帶來持久積極影響的夢想。
+                  </p>
+                  <p className="text-gray-600 leading-relaxed mb-8">
+                    一個夢想的實現不僅僅是一個愉快的經歷，它更是一份希望的宣言，是點燃潛能的火花。它能賦予人們力量，克服挑戰，並激勵周圍的人去追尋自己的夢想。
+                  </p>
+                  <a 
+                    href="#help" 
+                    className="bg-[#213159] text-white font-bold py-3 px-8 rounded-full hover:bg-[#1a2747] transition-all duration-300 transform hover:scale-105 inline-block"
+                  >
+                    了解如何幫助
+                  </a>
+                </div>
+              </div>
+            </div>
+          </section>
+        );
+      };
+
+      // --- From components/ImpactStats.tsx ---
+      const ImpactStats = () => {
+        const stats = [
+          { id: 1, value: '2,500+', label: '已實現的願望' },
+          { id: 2, value: '15', label: '服務年資' },
+          { id: 3, value: '98%', label: '正面家庭影響' },
+          { id: 4, value: '800+', label: '活躍志工' },
+        ];
+        return (
+          <section className="bg-[#3d6098] text-white py-16">
+            <div className="container mx-auto px-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                {stats.map((stat) => (
+                  <div key={stat.id} className="flex flex-col items-center">
+                    <p className="text-4xl md:text-5xl font-extrabold drop-shadow-md">{stat.value}</p>
+                    <p className="text-lg font-semibold mt-2 opacity-90">{stat.label}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+      };
+      
+      // --- From components/WishStories.tsx ---
+      const WishStories = () => {
+        const stories = [
+          { 
+            id: 1, 
+            name: '建築師的故事：林佩珊', 
+            wish: '我希望能成為一名建築師', 
+            imageUrl: 'https://github.com/zyrahuang/NPODemo/blob/main/Dreamcometrue9.png?raw=true',
+            story: `林佩珊從小就對高聳的建築和城市天際線充滿嚮往。然而，她的家庭經濟狀況讓她一度覺得建築師的夢想遙不可及。
+
+「希望編織者」NPO在佩珊高中時發現了她的天賦和熱情，不僅提供她獎學金支持她完成建築系學業，更連結她到業界導師進行實習。
+
+現在，她正站在自己參與設計的嶄新大樓前，眼神中充滿了自信與驕傲，證明了即使出身平凡，也能編織出不凡的城市風景。`
+          },
+          { 
+            id: 2, 
+            name: '科學家的故事：李雅婷', 
+            wish: '我希望能為人類健康帶來貢獻', 
+            imageUrl: 'https://github.com/zyrahuang/NPODemo/blob/main/Dreamcometrue8.png?raw=true',
+            story: `李雅婷從小就對微觀世界充滿好奇，夢想著能透過科學研究，為人類健康帶來貢獻。但在攻讀博士學位期間，研究經費的壓力讓她幾乎要放棄。
+
+她向「希望編織者」NPO申請了科學研究補助，獲得了關鍵的資金支持，讓她能購買實驗材料並參與國際學術會議。
+
+如今，雅婷在實驗室中專注地操作著顯微鏡，她的研究成果可能將為醫學界帶來突破性的發現，這一切都始於「希望編織者」為她編織出的那條支持線。`
+          },
+          { 
+            id: 3, 
+            name: '教師的故事：王志明', 
+            wish: '我希望為偏鄉的孩子帶來更好的教育', 
+            imageUrl: 'https://github.com/zyrahuang/NPODemo/blob/main/Dreamcometrue1.png?raw=true',
+            story: `王志明老師一直深信教育是改變社會的力量。他在偏鄉地區長大，深刻體會到資源匱乏對孩子們學習的影響。
+
+在教育大學畢業後，他決心回到偏鄉服務。然而，學校設施老舊、教學資源不足，讓他一度感到力不從心。
+
+「希望編織者」NPO看到了志明老師的熱情，不僅為他的班級捐贈了最新的教學設備和世界地圖，還提供了專業的教學研習機會。現在，志明老師充滿活力地引導著孩子們探索世界，他的笑容，就是希望最真實的寫照。`
+          },
+          { 
+            id: 4, 
+            name: '主廚的故事：陳家豪', 
+            wish: '我希望能成為一名頂尖主廚', 
+            imageUrl: 'https://github.com/zyrahuang/NPODemo/blob/main/Dreamcometrue2.png?raw=true',
+            story: `陳家豪的夢想是成為一名頂尖主廚，讓每位品嚐他料理的人都能感受到幸福。他出身於單親家庭，母親獨自扶養他長大，經濟壓力讓家豪一度考慮放棄學廚。
+
+透過「希望編織者」的餐飲培訓計畫，家豪不僅獲得了專業技能訓練，更得到了一間知名餐廳的實習機會。
+
+如今，他專注於為眼前的菜餚做最後的點綴，他的故事證明，只要有心，就能將夢想的滋味端上餐桌。`
+          },
+          { 
+            id: 5, 
+            name: '醫生的故事：張曉雯', 
+            wish: '我希望能成為一名溫暖的醫生', 
+            imageUrl: 'https://github.com/zyrahuang/NPODemo/blob/main/Dreamcometrue3.png?raw=true',
+            story: `張曉雯醫生總是帶著溫暖的笑容面對病人，她的夢想是成為一名醫術精湛且富有同理心的醫生。
+
+她在醫學院時期，曾因為繁重的學業和高昂的學費而感到迷惘。「希望編織者」NPO透過「醫學菁英培育計畫」為她提供了助學金，減輕了她的經濟負擔，讓她能專心於學業和臨床實習。
+
+如今，她輕柔地握著病患的手，給予的不僅是醫療上的幫助，更是心靈上的支持。曉雯醫生深知，是「希望編織者」的幫助，讓她得以穿上白袍，溫暖每一個需要的人。`
+          },
+          { 
+            id: 6, 
+            name: '藝術家的故事：陳詩涵', 
+            wish: '我想當藝術家', 
+            imageUrl: 'https://github.com/zyrahuang/NPODemo/blob/main/Dreamcometrue6.png?raw=true',
+            story: `陳詩涵從小就熱愛繪畫，她的作品總是充滿了繽紛的色彩和天馬行空的想像。然而，家人的期望是她能選擇一份更「穩定」的職業，讓她的藝術之路走得格外艱辛。
+
+在大學畢業後，詩涵毅然決然選擇投入全職創作，卻面臨了畫室租金和材料費的困境。
+
+「希望編織者」NPO的「藝術家支持計畫」為她提供了一年的畫室租金補助，並協助她舉辦了首次個人畫展。如今，詩涵在自己的畫室裡盡情揮灑創意，她的畫作就像她的夢想一樣，絢麗而生動，這都歸功於「希望編織者」讓她的藝術之夢不再只是空白的畫布。`
+          },
+        ];
+        const WishCard = ({ story, isExpanded, onToggle }) => (
+          <div className="bg-white rounded-xl overflow-hidden shadow-lg transition-shadow duration-300 hover:shadow-2xl flex flex-col">
+            <div onClick={onToggle} className="group relative cursor-pointer">
+              <img src={story.imageUrl} alt={story.wish} className="w-full h-80 object-cover transition-transform duration-500 ease-in-out group-hover:scale-110" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+              <div className="absolute bottom-0 left-0 p-6 text-white w-full">
+                <h3 className="text-2xl font-bold">{story.name}</h3>
+                <p className="text-lg opacity-90">{story.wish}</p>
+              </div>
+              <div className={`absolute top-4 right-4 bg-white/30 backdrop-blur-sm rounded-full p-2 transition-transform duration-500 ${isExpanded ? 'rotate-180' : ''}`}>
+                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                 </svg>
+              </div>
+            </div>
+            <div 
+              className={`transition-all duration-700 ease-in-out overflow-hidden ${isExpanded ? 'max-h-[500px]' : 'max-h-0'}`}
+            >
+              <div className="p-6 border-t border-gray-200 bg-white">
+                <p className="text-gray-700 leading-relaxed whitespace-pre-line">{story.story}</p>
+              </div>
+            </div>
+          </div>
+        );
+        const [expandedStoryId, setExpandedStoryId] = useState(null);
+        const handleToggleStory = (id) => {
+          setExpandedStoryId(expandedStoryId === id ? null : id);
+        };
+        return (
+          <section id="stories" className="py-20 bg-gray-50">
+            <div className="container mx-auto px-6">
+              <div className="text-center mb-12">
+                <h2 className="text-sm font-bold uppercase text-[#3d6098] tracking-widest mb-2">勵志故事</h2>
+                <h3 className="text-3xl md:text-4xl font-extrabold text-gray-800">
+                  每個夢想都有一個故事
+                </h3>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 items-start">
+                {stories.map(story => (
+                  <WishCard
+                    key={story.id}
+                    story={story}
+                    isExpanded={expandedStoryId === story.id}
+                    onToggle={() => handleToggleStory(story.id)}
+                  />
+                ))}
+              </div>
+              <div className="text-center mt-12">
+                  <a href="#stories" className="bg-[#f04b4c] text-white font-bold py-3 px-8 rounded-full hover:bg-[#d94445] transition-all duration-300 transform hover:scale-105">
+                      查看更多故事
+                  </a>
+              </div>
+            </div>
+          </section>
+        );
+      };
+
+      // --- From components/WaysToHelp.tsx ---
+      const WaysToHelp = ({ helpMethods, onMethodClick }) => {
+          const HelpCard = ({ method, onClick }) => (
+            <div onClick={onClick} className="bg-white p-8 rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer text-center">
+              <div className="flex justify-center mb-4">
+                <div className="bg-gray-100 p-4 rounded-full">
+                  <method.icon className="w-10 h-10 text-[#3d6098]" />
+                </div>
+              </div>
+              <h4 className="text-xl font-bold text-gray-800 mb-2">{method.title}</h4>
+              <p className="text-gray-600">{method.description}</p>
+            </div>
+          );
+          return (
+              <section id="help" className="py-20 bg-[#3d6098]">
+                  <div className="container mx-auto px-6">
+                      <div className="text-center mb-12">
+                          <h3 className="text-3xl md:text-4xl font-extrabold text-white">
+                              您可以如何提供幫助
+                          </h3>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                          {helpMethods.map(method => (
+                              <HelpCard key={method.id} method={method} onClick={() => onMethodClick(method)} />
+                          ))}
+                      </div>
+                  </div>
+              </section>
+          );
+      };
+
+      // --- From components/News.tsx ---
+      const News = () => {
+        const [selectedArticle, setSelectedArticle] = useState(null);
+        const NewsModal = ({ article, onClose }) => {
+          useEffect(() => {
+            const handleEsc = (event) => {
+              if (event.key === 'Escape') {
+                onClose();
+              }
+            };
+            if (article) {
+              document.body.style.overflow = 'hidden';
+              window.addEventListener('keydown', handleEsc);
+            }
+            return () => {
+              document.body.style.overflow = 'auto';
+              window.removeEventListener('keydown', handleEsc);
+            };
+          }, [article, onClose]);
+
+          if (!article) return null;
+
+          const handleModalContentClick = (e) => {
+            e.stopPropagation();
+          };
+
+          return (
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="modal-title"
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-sm"
+              onClick={onClose}
+            >
+              <div
+                className="bg-white rounded-lg shadow-2xl w-full max-w-4xl m-4 transform animate-fade-in-scale"
+                onClick={handleModalContentClick}
+              >
+                <div className="p-6 md:p-8 max-h-[85vh] overflow-y-auto">
+                  <div className="flex justify-between items-start mb-4 pb-4 border-b">
+                    <div>
+                      <h3 id="modal-title" className="text-2xl md:text-3xl font-bold text-gray-900">{article.title}</h3>
+                      <p className="text-md text-gray-500 mt-1">{article.date}</p>
+                    </div>
+                    <button
+                      aria-label="Close modal"
+                      onClick={onClose}
+                      className="text-gray-500 hover:text-gray-800 transition-colors p-1 rounded-full ml-4 flex-shrink-0"
+                    >
+                      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                  </div>
+                  <div className="article-content text-gray-700 leading-relaxed space-y-4 mt-4">
+                    {article.fullContent}
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        };
+        const articles = [
+          { 
+            id: 1, 
+            date: '2025年9月26日', 
+            title: '年度晚會募款金額創下新高', 
+            excerpt: '我們的社群為一個難忘的奉獻之夜齊聚一堂，幫助我們更接近實現每個夢想家的願望。',
+            fullContent: (
+              <div className="space-y-4">
+                <p>在我們最近舉行的年度慈善晚會上，我們非常高興地宣布，我們打破了所有先前的募款記錄。來自社區的慷慨支持真是令人驚嘆。晚會充滿了感人的故事、精彩的表演和堅定的承諾，共同為我們的使命奮鬥。</p>
+                <p>籌集到的資金將使我們能夠在來年實現數百個改變生命的夢想。每一筆捐款，無論大小，都將直接用於為那些面臨挑戰的人們帶來希望和喜悅。我們衷心感謝每一位捐助者、志工和工作人員，是你們讓這個夜晚取得了巨大的成功。沒有你們，這一切都不可能實現。</p>
+                <img src="https://github.com/zyrahuang/NPODemo/blob/main/Story%20of%20Funding.png?raw=true" alt="Gala event" className="rounded-lg shadow-md my-4 w-full object-cover" />
+                <p>我們期待在未來的活動中再次見到大家，並繼續我們共同的旅程，編織更多的希望故事。</p>
+              </div>
+            )
+          },
+          { 
+            id: 2, 
+            date: '2025年8月15日', 
+            title: '志工焦點：認識 Jane Doe', 
+            excerpt: '十多年來，Jane 一直致力於讓夢想成真。閱讀她與我們一起的勵志旅程。',
+            fullContent: (
+                <div className="space-y-4">
+                    <p>本月，我們將聚光燈投向我們最敬業的志工之一，Jane Doe。十年來，Jane 一直是我們組織的核心和靈魂。她對我們的使命的熱情和不懈的奉獻精神，已經感動了無數人的生命。</p>
+                    <p>Jane 從一個小小的夢想開始了她的旅程——希望為社區帶來積極的改變。她參與了從活動策劃到親手實現願望的各個方面。"看到一個夢想成真時，他們臉上的喜悅，是我不斷前進的動力，" Jane 分享道。"這提醒我，即使是小小的善舉也能產生巨大的影響。"</p>
+                    <img src="https://github.com/zyrahuang/NPODemo/blob/main/Story%20of%20volunteer.png?raw=true" alt="Volunteer Jane Doe" className="rounded-lg shadow-md my-4 w-full object-cover" />
+                    <p>我們非常感謝 Jane 的服務和她所啟發的無數人。她的故事證明了個人力量可以改變世界。如果您也受到啟發，希望成為像 Jane 一樣的志工，請訪問我們的「如何幫助」頁面。</p>
+                </div>
+            )
+          },
+          { 
+            id: 3, 
+            date: '2025年7月2日', 
+            title: '與 TechCorp 建立新的企業夥伴關係', 
+            excerpt: '我們很高興地宣布與 TechCorp 建立新的合作夥伴關係，這將有助於我們利用科技接觸更多需要幫助的人。',
+            fullContent: (
+                <div className="space-y-4">
+                    <p>我們很榮幸地宣布與領先的科技公司 TechCorp 建立新的戰略合作夥伴關係。這次合作將科技創新的力量與我們實現夢想的使命相結合，為我們服務的社區開闢了激動人心的新可能性。</p>
+                    <img src="https://github.com/zyrahuang/NPODemo/blob/main/Story%20of%20cooperation.png?raw=true" alt="TechCorp Partnership" className="rounded-lg shadow-md my-4 w-full object-cover" />
+                    <p>TechCorp 將提供技術資源、專業知識和志工支持，幫助我們簡化運營，擴大影響範圍，並為我們的夢想家創造更具沉浸感的體驗。"在 TechCorp，我們相信科技應該被用來造福社會，" TechCorp 首席執行官說。"我們很高興能與希望編織者合作，利用我們的平台來放大他們的影響力，並為世界帶來更多希望。"</p>
+                    <p>這項合作夥伴關係是我們如何與有遠見的組織合作，共同創造更美好未來的一個光輝典範。我們對未來的可能性感到無比興奮。</p>
+                </div>
+            )
+          },
+        ];
+        const NewsArticleCard = ({ article, onReadMore }) => (
+            <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 flex flex-col">
+                <p className="text-sm text-gray-500 mb-2">{article.date}</p>
+                <h4 className="text-xl font-bold text-gray-800 mb-3">{article.title}</h4>
+                <p className="text-gray-600 mb-4 flex-grow">{article.excerpt}</p>
+                <button onClick={() => onReadMore(article)} className="font-semibold text-left text-[#3d6098] hover:text-[#213159] transition-colors mt-auto">閱讀更多 &rarr;</button>
+            </div>
+        );
+        return (
+          <React.Fragment>
+            <section id="news" className="py-20 bg-white">
+              <div className="container mx-auto px-6">
+                <div className="text-center mb-12">
+                  <h2 className="text-sm font-bold uppercase text-[#3d6098] tracking-widest mb-2">最新動態</h2>
+                  <h3 className="text-3xl md:text-4xl font-extrabold text-gray-800">
+                    新聞與活動
+                  </h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    {articles.map(article => <NewsArticleCard key={article.id} article={article} onReadMore={setSelectedArticle} />)}
+                </div>
+              </div>
+            </section>
+            <NewsModal article={selectedArticle} onClose={() => setSelectedArticle(null)} />
+          </React.Fragment>
+        );
+      };
+
+      // --- From components/Sponsors.tsx ---
+      const Sponsors = () => {
+        const SponsorLogo = ({ name }) => (
+          <div className="flex items-center justify-center p-4 h-24">
+            <span className="text-gray-500 text-2xl font-bold filter grayscale hover:grayscale-0 transition-all duration-300 cursor-pointer">{name}</span>
+          </div>
+        );
+        const sponsorNames = ["Innovate Co.", "Future Systems", "Quantum Tech", "Apex Solutions", "Global Ventures", "Synergy Corp"];
+        return (
+          <section className="py-16 bg-white">
+            <div className="container mx-auto px-6">
+              <h3 className="text-center text-2xl font-bold text-gray-600 mb-8">
+                我們尊貴的合作夥伴
+              </h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+                {sponsorNames.map(name => <SponsorLogo key={name} name={name} />)}
+              </div>
+            </div>
+          </section>
+        );
+      };
+      
+      // --- From components/Footer.tsx ---
+      const Footer = () => {
+        const FooterLogo = () => (
+          <div className="flex items-center space-x-2 mb-4">
+            <svg width="32" height="32" viewBox="0 0 24 24" className="text-white" fill="currentColor">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm3.41 14.59L12 13.17l-3.41 3.42-1.41-1.42L10.59 11.75l-3.42-3.41 1.42-1.42L12 10.34l3.41-3.41 1.42 1.42L13.41 11.75l3.42 3.41-1.42 1.43z" transform="scale(1.2) rotate(45 12 12)" />
+            </svg>
+            <span className="text-xl font-extrabold text-white">希望編織者</span>
+          </div>
+        );
+        const SocialIcon = ({ href, children }) => (
+          <a href={href} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors duration-300">{children}</a>
+        );
+        const FacebookIcon = () => (
+          <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v2.385z" /></svg>
+        );
+        const XIcon = () => (
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        );
+        const InstagramIcon = () => (
+          <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.584-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.148-4.771-1.691-4.919-4.919-.058-1.265-.069-1.645-.069-4.85s.011-3.584.069-4.85c.149-3.225 1.664 4.771 4.919-4.919 1.266-.057 1.645-.069 4.85-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948s.014 3.667.072 4.947c.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072s3.667-.014 4.947-.072c4.358-.2 6.78-2.618 6.98-6.98.059-1.281.073-1.689.073-4.948s-.014-3.667-.072-4.947c-.2-4.358-2.618-6.78-6.98-6.98-1.281-.059-1.689-.073-4.948-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.162 6.162 6.162 6.162-2.759 6.162-6.162-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4s1.791-4 4-4 4 1.79 4 4-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44 1.441-.645 1.441-1.44-.645-1.44-1.441-1.44z" /></svg>
+        );
+        return (
+          <footer id="contact" className="bg-[#213159] text-gray-300">
+            <div className="container mx-auto px-6 py-12">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div className="md:col-span-2">
+                  <FooterLogo />
+                  <p className="max-w-md">
+                    希望編織者基金會是一個註冊的 501(c)(3) 非營利組織，致力於幫助各行各業的人們實現他們改變生命的夢想。
+                  </p>
+                </div>
+                <div>
+                  <h4 className="font-bold text-white text-lg mb-4">快速連結</h4>
+                  <ul className="space-y-2">
+                    <li><a href="#about" className="hover:text-white transition-colors">關於我們</a></li>
+                    <li><a href="#stories" className="hover:text-white transition-colors">願望故事</a></li>
+                    <li><a href="#help" className="hover:text-white transition-colors">如何幫助</a></li>
+                    <li><a href="#news" className="hover:text-white transition-colors">最新消息</a></li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-bold text-white text-lg mb-4">與我們聯繫</h4>
+                  <p className="mb-4">台灣，台北市信義區，希望路123號</p>
+                  <div className="flex space-x-4">
+                    <SocialIcon href="https://www.facebook.com/?locale=zh_TW"><FacebookIcon /></SocialIcon>
+                    <SocialIcon href="https://x.com/"><XIcon /></SocialIcon>
+                    <SocialIcon href="https://www.instagram.com/"><InstagramIcon /></SocialIcon>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="bg-[#1a2747] py-4">
+              <div className="container mx-auto px-6 text-center text-gray-500 text-sm">
+                &copy; {new Date().getFullYear()} 希望編織者基金會。版權所有。
+              </div>
+            </div>
+          </footer>
+        );
+      };
+
+      // --- From components/HelpModal.tsx ---
+      const HelpModal = ({ content, onClose }) => {
+        useEffect(() => {
+          const handleEsc = (event) => {
+            if (event.key === 'Escape') {
+              onClose();
+            }
+          };
+          if (content) {
+              document.body.style.overflow = 'hidden';
+              window.addEventListener('keydown', handleEsc);
+          }
+          return () => {
+              document.body.style.overflow = 'auto';
+              window.removeEventListener('keydown', handleEsc);
+          };
+        }, [content, onClose]);
+
+        if (!content) return null;
+
+        const handleModalContentClick = (e) => {
+          e.stopPropagation();
+        };
+
+        return (
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-title"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-sm"
+            onClick={onClose}
+          >
+            <div
+              className="bg-white/80 backdrop-blur-lg rounded-lg shadow-2xl w-full max-w-3xl m-4 transform animate-fade-in-scale"
+              onClick={handleModalContentClick}
+            >
+              <div className="flex justify-between items-center p-5 border-b border-gray-200/50">
+                <h3 id="modal-title" className="text-2xl font-bold text-gray-800">{content.details.title}</h3>
+                <button
+                  aria-label="Close modal"
+                  onClick={onClose}
+                  className="text-gray-500 hover:text-gray-800 transition-colors p-1 rounded-full"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+              </div>
+              <div className="p-6 max-h-[70vh] overflow-y-auto">
+                {content.details.content}
+              </div>
+            </div>
+          </div>
+        );
+      };
+      
+      // --- From App.tsx ---
+      const App = () => {
+        const [selectedMethod, setSelectedMethod] = useState(null);
+        const DonationDetails = () => {
+          const [copied, setCopied] = useState(false);
+          const accountNumber = '123-456-789012';
+          const handleCopy = () => {
+              navigator.clipboard.writeText(accountNumber).then(() => {
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 2000); // Reset after 2 seconds
+              });
+          };
+          return (
+              <React.Fragment>
+                  <p className="mb-6 text-gray-600">您的慷慨捐助是我們工作的基石。每一分錢都將直接用於實現那些能改變人生的夢想。無論金額大小，您的支持都意義重大。</p>
+                  <div className="space-y-6">
+                      <div className="bg-gray-50/50 p-4 rounded-lg border">
+                          <h4 className="font-bold text-lg mb-2 text-gray-800">銀行轉帳</h4>
+                          <p className="text-sm text-gray-500 mb-3">您可以將捐款直接轉入我們的銀行帳戶。</p>
+                          <div className="text-gray-700 space-y-1">
+                              <p><span className="font-semibold">銀行：</span> 希望銀行 (Hope Bank)</p>
+                              <p><span className="font-semibold">戶名：</span> 希望編織者基金會</p>
+                              <div className="flex items-center justify-between">
+                                  <p><span className="font-semibold">帳號：</span> {accountNumber}</p>
+                                  <button
+                                      onClick={handleCopy}
+                                      className="bg-[#213159] text-white text-sm font-bold py-1 px-3 rounded-full hover:bg-[#1a2747] transition-all duration-300"
+                                  >
+                                      {copied ? '已複製!' : '複製'}
+                                  </button>
+                              </div>
+                          </div>
+                      </div>
+                      <div className="bg-gray-50/50 p-4 rounded-lg border">
+                          <h4 className="font-bold text-lg mb-2 text-gray-800">線上捐款</h4>
+                          <p className="text-sm text-gray-500 mb-3">透過我們的安全平台，使用信用卡或 PayPal 進行捐款。</p>
+                          <a href="https://www.paypal.com/tw/home" target="_blank" rel="noopener noreferrer" className="w-full text-center bg-[#f04b4c] text-white font-bold py-3 px-6 rounded-full hover:bg-[#d94445] transition-all duration-300 transform hover:scale-105 inline-block">
+                              前往線上捐款
+                          </a>
+                      </div>
+                  </div>
+              </React.Fragment>
+          );
+        };
+        const helpMethods = [
+            {
+                id: 1,
+                icon: DonateIcon,
+                title: '捐款支持',
+                description: '您的每一筆捐款都將直接用於實現夢想，帶來改變。',
+                details: {
+                    title: '捐款支持',
+                    content: <DonationDetails />,
+                },
+            },
+            {
+                id: 2,
+                icon: VolunteerIcon,
+                title: '成為志工',
+                description: '貢獻您的時間和技能，親身參與到實現夢想的過程中。',
+                details: {
+                    title: '成為志工',
+                    content: (
+                        <React.Fragment>
+                            <p className="mb-4 text-gray-600">我們的志工是希望的使者。您的時間、技能和熱情是無價的。加入我們，您將有機會直接參與夢想的實現過程，見證生命被改變的瞬間。</p>
+                            <h4 className="font-bold text-lg mb-2 text-gray-800">志工機會：</h4>
+                            <ul className="list-disc list-inside space-y-2 mb-6 text-gray-600">
+                                <li>活動策劃與執行</li>
+                                <li>夢想實現的陪伴與協助</li>
+                                <li>辦公室行政支持</li>
+                                <li>專業技能貢獻（如攝影、翻譯等）</li>
+                            </ul>
+                            <a href="https://docs.google.com/forms/d/17MQ95Lx2W9i8ZRCqwJma__AfIIPrr0wH7Jjg0oy3LsI/edit?hl=zh-tw&pli=1" target="_blank" rel="noopener noreferrer" className="w-full text-center bg-[#f04b4c] text-white font-bold py-3 px-6 rounded-full hover:bg-[#d94445] transition-all duration-300 transform hover:scale-105 inline-block">
+                                申請成為志工
+                            </a>
+                        </React.Fragment>
+                    ),
+                },
+            },
+            {
+                id: 3,
+                icon: PartnerIcon,
+                title: '企業合作',
+                description: '與我們合作，共同承擔社會責任，擴大您的品牌影響力。',
+                details: {
+                    title: '企業合作',
+                    content: (
+                        <React.Fragment>
+                            <p className="mb-4 text-gray-600">我們相信合作能創造更大的影響力。與希望編織者合作，不僅能實踐企業社會責任，還能提升品牌形象，凝聚員工向心力。</p>
+                            <h4 className="font-bold text-lg mb-2 text-gray-800">合作方式：</h4>
+                            <ul className="list-disc list-inside space-y-2 mb-6 text-gray-600">
+                                <li>企業捐款或物資贊助</li>
+                                <li>員工志工活動</li>
+                                <li>聯合行銷活動</li>
+                                <li>收益部分捐贈</li>
+                            </ul>
+                            <a href="https://docs.google.com/forms/d/17MQ95Lx2W9i8ZRCqwJma__AfIIPrr0wH7Jjg0oy3LsI/edit?hl=zh-tw&pli=1" target="_blank" rel="noopener noreferrer" className="w-full text-center bg-[#f04b4c] text-white font-bold py-3 px-6 rounded-full hover:bg-[#d94445] transition-all duration-300 transform hover:scale-105 inline-block">
+                                聯繫我們洽談合作
+                            </a>
+                        </React.Fragment>
+                    ),
+                },
+            },
+        ];
+        const handleDonateClick = () => {
+          const donateMethod = helpMethods.find(method => method.id === 1);
+          if (donateMethod) {
+            setSelectedMethod(donateMethod);
+          }
+        };
+        return (
+          <div className="bg-white text-gray-800">
+            <Header onDonateClick={handleDonateClick} />
+            <main>
+              <Hero />
+              <Introduction />
+              <News />
+              <WishStories />
+              <WaysToHelp helpMethods={helpMethods} onMethodClick={setSelectedMethod} />
+              <ImpactStats />
+              <Sponsors />
+            </main>
+            <Footer />
+            <HelpModal content={selectedMethod} onClose={() => setSelectedMethod(null)} />
+          </div>
+        );
+      };
+
+      // --- From index.tsx ---
+      const rootElement = document.getElementById('root');
+      if (!rootElement) {
+        throw new Error("Could not find root element to mount to");
+      }
+      const root = ReactDOM.createRoot(rootElement);
+      root.render(
+        <React.StrictMode>
+          <App />
+        </React.StrictMode>
+      );
+    </script>
     
     <!-- Script to handle anchor link navigation issue -->
     <script>
-      // Using event delegation for efficiency
       document.addEventListener('click', function(e) {
-        // Find the closest ancestor anchor tag that links to an ID
         const anchor = e.target.closest('a[href^="#"]');
-
         if (anchor) {
           const href = anchor.getAttribute('href');
-          // Ignore placeholder links
           if (href === '#') return;
-          
-          const targetId = href;
-          const targetElement = document.querySelector(targetId);
-
-          // If the target element exists on the page, prevent default navigation
-          // and smoothly scroll to it.
+          const targetElement = document.querySelector(href);
           if (targetElement) {
             e.preventDefault();
             targetElement.scrollIntoView({
