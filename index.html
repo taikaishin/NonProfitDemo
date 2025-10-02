@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>希望編織者 (Wish Weavers)</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='%233d6098'%3E%3Cpath%20transform='scale(1.2)%20rotate(45%2012%2012)'%20d='M12%202C6.48%202%202%206.48%202%2012s4.48%2010%2010%2010%2010-4.48%2010-10S17.52%202%2012%202zm3.41%2014.59L12%2013.17l-3.41%203.42-1.41-1.42L10.59%2011.75l-3.42-3.41%201.42-1.42L12%2010.34l3.41-3.41%201.42%201.42L13.41%2011.75l3.42%203.41-1.42%201.43z'/%3E%3C/svg%3E">
     
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -68,6 +69,29 @@
         <svg {...props} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
       );
       
+      // --- Line Contact Button Component ---
+      const LineIcon = (props) => (
+        <svg {...props} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20.25 4.5H3.75A1.5 1.5 0 0 0 2.25 6v9a1.5 1.5 0 0 0 1.5 1.5h2.387v2.813a.75.75 0 0 0 1.312.53l2.588-2.588H20.25a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5zM8.25 12.75h-1.5v-1.5h1.5v1.5zm3.75 0h-1.5V8.25h1.5v4.5zm3.75 0h-1.5V8.25h1.5v4.5z"/>
+        </svg>
+      );
+      const LineContactButton = () => {
+        return (
+          <a
+            href="https://line.me/ti/p/@your-line-id" // Placeholder URL
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Contact us on LINE"
+            className="group fixed bottom-6 right-6 z-40 bg-[#06C755] text-white w-16 h-16 rounded-full flex items-center justify-center shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-110"
+          >
+            <LineIcon className="w-9 h-9" />
+            <span className="absolute bottom-1/2 translate-y-1/2 right-full mr-3 px-3 py-1.5 bg-gray-800 text-white text-sm font-semibold rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none">
+              用 LINE 聯絡我們
+            </span>
+          </a>
+        );
+      };
+
       // --- From components/Header.tsx ---
       const Header = ({ onDonateClick }) => {
         const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -782,6 +806,7 @@
             </main>
             <Footer />
             <HelpModal content={selectedMethod} onClose={() => setSelectedMethod(null)} />
+            <LineContactButton />
           </div>
         );
       };
